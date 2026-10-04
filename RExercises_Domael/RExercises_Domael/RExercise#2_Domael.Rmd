@@ -1,23 +1,11 @@
 ---
-title: "RExercise#2_Domael"
-author: "Jastine Mae Domael"
-date: "2026-10-04"
-output: html_document
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
----
 title: "Exercise 2: Arithmetic Operator"
 author: "Jastine Mae Domael"
 date: "2026-09-30"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r}
 ```
 
 ## Part A - Arithmetic Operations
