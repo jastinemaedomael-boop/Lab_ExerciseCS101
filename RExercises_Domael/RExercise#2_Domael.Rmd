@@ -25,6 +25,11 @@ a%/%b
 
 2^10
 ```
+Question #1: Run 17 / 5, 17 %% 5, and 17 %/% 5 side by side. In your own words, explain how these three results relate to each other mathematically.
+    These results show both standard division and quotient-remainder division. The exact value is performed as a decimal division. The whole-number quotient (3), which indicates how many times 5 goes into 17, is the result of integer division, which is calculated using the %/% operator. Together, they satisfy the fundamental division algorithm identity: Dividend = (Divisor * Quotient) + Remainder.
+    
+Question #2: Predict the output of 10 %% 3 and 10 %/% 3 before running the code. Were you correct? If not, explain what you misunderstood.
+    My predicted output for 10%%3 is 1 and for 10%/%3 is 3. My predictions are correct because 3 goes into 10 three times, leaving a remainder of 1.
 
 ## Part B - Basic Data Types
 
@@ -53,6 +58,12 @@ mode(z)
 mode(w)
 mode(v)
 ```
+Question #3): x <- 42 and y <- 42L look almost identical, but typeof(x) and typeof(y) give different answers. Explain the difference in your own words.
+    R stores any plain number (such as 42) as a double by default, even if there isn't a visible decimal point. The capital letter L must be added to the number (such as 42L) in order to specifically instruct R to store a value as a true integer without decimal support.
+    
+Question #4: Is typeof() ever different from class() and from mode() for the same object? Look at your results above and explain any case where this happens (or, if you did not see one, explain what you would expect for a matrix or factor).
+    Yes, different results can be obtained for the same object using typeof(), class(), and mode().For the vectors tested in the lab (x, y, z, w, v), typeof() and class() match, but mode() groups both "double" (x) and "integer" (y) under the broader category of "numeric". They significantly differs from their factors, matrices, and data frames. In their factors, typeof() gives "integer", class() gives "factor", and mode() gives "numeric". While in their matrices, typeof() gives "double", class() gives "matrix" "array", and mode() gives "numeric".
+
 ## Part C - Type Conversion
 
 ```{r}
@@ -69,6 +80,21 @@ bad_string <- "hello123"
 as.numeric (bad_string)
 
 ```
+Question #5: When you ran the conversion-fail chunk, R produced NA and a warning instead of stopping with an error.
+
+Why do you think R is designed to give a warning here rather than crashing the whole script?
+    R's primary purpose is to analyze data and work with big datasets or vectors. When coerced type conversions fail (such as as.numeric("hello123")), converting invalid inputs into NA with a warning allows R to process more usable data as possible without disturbing the execution of an whole pipeline or script over a single invalid entry.
+
+What are the risks of this behavior if you don’t read your warnings?
+    If the warnings are taken for granted, functions like mean() and sum() will return NA unless na.rm = TRUE is explicitly specified. This is because NA values will slowly spread throughout your data and eventually result in data loss, corrupted summary metrics, or inaccurate statistical findings without causing a fatal error.
+    
+Question #6: as.logical(0) and as.logical(1) convert to FALSE and TRUE.
+
+What do you think as.logical(2) and as.logical(-1)` will produce?
+    I think as.logical(2) and as.logical(-1)` will produce TRUE.
+
+Test it, then explain the rule R seems to be following.
+    Testing it in R outputs TRUE for both values. It is because the rule R follows for coercing numeric values to logical booleans wherein 0 is treated as FALSE and any non-zero numeric value (whether it is positive, negative, integer, or floating-point/decimal) evaluates to TRUE.
 
 ## Part D - Strings, paste(), and paste0()
 
@@ -87,7 +113,31 @@ paste(first_name, last_name, sep = "-")
 
 age <- 21
 paste0(full_name, "is", age, "years old.")
-
-
-
 ```
+Question #7: paste() and paste0() produced different results for the same two strings. Explain exactly why, referencing what each function does by default.
+    The paste() and paste0() produced different results because
+paste() uses a space (sep = " ") as its default separator, so combining "Juan" and "Dela Cruz" produces "Juan Dela Cruz". While paste0() is a shorthand version of paste() that defaults to no separator (sep = ""), joining the strings directly together to produce "JuanDela Cruz"
+
+Question #8: In the strings-numbers chunk, you combined a character string with a numeric variable (age) using paste0() without first converting age to a string.
+
+Did this cause an error? Explain what paste0() does internally to make this work, and how it relates to the type conversions you practiced in Part C.
+    No, it did not cause an error because paste0() (and paste()) automatically performs type conversion internally. Before concatenating arguments, R automatically converts any non-character inputs into character type. In relation to the type conversions practiced in Part C, this is the automated form of calling as.character(age). Functions like paste0() handle this conversion under the hood so that all arguments share the same character data type before joining, whereas Part C showed explicit coercion where you manually use functions like as.numeric() or as.character().
+    
+## Part E - Critical Thinking Challenge
+
+```{r}
+# "5" + 5
+
+as.numeric("5") + 5
+```
+Question #9: Some programming languages automatically convert "5" + 5 into 10 without an error. R does not.
+
+Based on what you’ve learned about R’s data types in this lab, why do you think R requires an explicit conversion instead of guessing what the programmer meant?
+    Because R was designed specifically for data science and statistics, where speculating about programr intent can result in hidden data corruption, it does not automatically convert text like "5" into numbers. R enforces strict type safety rather than making assumptions because combining text and numbers could result in addition (10) or string concatenation ("55"). By requiring explicit functions like as.numeric(), you can make sure that your data is purposefully cleaned and parsed, preventing unwanted non-numeric values from ruining calculations later on.
+    
+Question #10: Suppose a classmate writes a script that reads a column of “numbers” from a text file. The column looks numeric, but when they try sum() on it, R throws an error. Based on everything in this lab (types, typeof()/class()/mode(), conversion, warnings), write a short paragraph explaining what likely went wrong and the steps you’d take to diagnose and fix it.
+    The column likely failed to sum because R read it in as a character (or factor) vector rather than a numeric vector, which often happens when a text file contains hidden quotes, extra spaces, or non-numeric entries like "N/A". To diagnose this, I would use typeof() or class() to determine the underlying data type of the column in order to diagnose this. Once confirmed as non-numeric, I would inspect the data for non-digit characters, clean them up, and explicitly convert the column using as.numeric(), while keeping an eye out for any conversion warnings that indicate unexpected missing values before re-running sum().
+    
+Conclusion
+In 3–4 sentences, summarize what you learned about how R handles different data types, and why understanding typeof()/class() and conversion functions matters before doing arithmetic or combining data.
+    R uses a strict, intentional data system that defaults to floating-point doubles for basic numbers and separates high-level object behaviors from low-level memory storage. It manages mixed-type operations strictly, purposefully refusing to guess during math operations like addition while automatically coercing types in text functions like paste(). Knowing that you're actually working diagnostic functions. Before performing computations or merging datasets, learn how to use conversion tools like as.numeric() to clean up messy inputs, identify coercion warnings early, and avoid unforeseen errors.
